@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ruixing Liu x OpenSesame</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-soft: rgba(10, 16, 40, 0.9);
+      --accent: #7fffd4;
+      --accent-soft: rgba(127, 255, 212, 0.14);
+      --accent-strong: #4be1c1;
+      --accent-secondary: #a48fff;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --card-radius: 1.5rem;
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
+      --border-subtle: rgba(148, 163, 184, 0.35);
+      --glass: rgba(15, 23, 42, 0.8);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background:
+        radial-gradient(circle at 10% -10%, rgba(127, 255, 212, 0.09), transparent 55%),
+        radial-gradient(circle at 110% 10%, rgba(164, 143, 255, 0.14), transparent 60%),
+        linear-gradient(160deg, #020617, #020617 40%, #020617 80%);
+      color: var(--text-main);
+      min-height: 100vh;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 999px;
+      filter: blur(50px);
+      opacity: 0.55;
+      z-index: -1;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .orb.one {
+      width: 260px;
+      height: 260px;
+      background: rgba(127, 255, 212, 0.17);
+      top: -70px;
+      left: -40px;
+      animation: driftOne 18s ease-in-out infinite alternate;
+    }
+
+    .orb.two {
+      width: 300px;
+      height: 300px;
+      background: rgba(164, 143, 255, 0.22);
+      bottom: -90px;
+      right: -60px;
+      animation: driftTwo 20s ease-in-out infinite alternate;
+    }
+
+    .orb.three {
+      width: 220px;
+      height: 220px;
+      background: rgba(56, 189, 248, 0.18);
+      top: 40%;
+      right: 15%;
+      animation: driftThree 24s ease-in-out infinite alternate;
+    }
+
+    @keyframes driftOne {
+      from { transform: translate3d(0, 0, 0); }
+      to { transform: translate3d(40px, 60px, 0); }
+    }
+    @keyframes driftTwo {
+      from { transform: translate3d(0, 0, 0); }
+      to { transform: translate3d(-40px, -50px, 0); }
+    }
+    @keyframes driftThree {
+      from { transform: translate3d(0, 0, 0); }
+      to { transform: translate3d(20px, -40px, 0); }
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+
+    header {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .badge {
+      font-size: 0.82rem;
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: radial-gradient(circle at 0 0, rgba(127, 255, 212, 0.12), transparent 60%),
+        rgba(15, 23, 42, 0.8);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 14px rgba(127, 255, 212, 0.9);
+    }
+
+  main {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  @media (max-width: 880px) {
+    main {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+    .hero {
+      background: radial-gradient(circle at top left, rgba(127, 255, 212, 0.09), transparent 60%),
+        rgba(15, 23, 42, 0.88);
+      border-radius: var(--card-radius);
+      padding: 26px 24px 24px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(164, 143, 255, 0.27), transparent 65%);
+      opacity: 0.7;
+      mix-blend-mode: soft-light;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-row-one {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .hero-tag {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .hero-tag span {
+      color: var(--accent);
+    }
+
+    .hero-pill {
+      font-size: 0.8rem;
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    h1 {
+      font-size: clamp(2.1rem, 4vw, 2.8rem);
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(120deg, #e5e7eb, var(--accent-strong), var(--accent-secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      font-size: 0.98rem;
+      color: var(--text-muted);
+      max-width: 32rem;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .subtitle strong {
+      color: #e5e7eb;
+      font-weight: 600;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-size: 0.9rem;
+      padding: 9px 16px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.18s ease-out;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: radial-gradient(circle at top left, #22c55e, #0ea5e9);
+      color: #0b1220;
+      font-weight: 600;
+      box-shadow: 0 10px 35px rgba(15, 118, 110, 0.45);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px) scale(1.01);
+      box-shadow: 0 16px 40px rgba(15, 118, 110, 0.6);
+      filter: brightness(1.03);
+    }
+
+    .btn-ghost {
+      background: rgba(15, 23, 42, 0.9);
+      border-color: rgba(148, 163, 184, 0.7);
+      color: var(--text-main);
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(148, 163, 184, 1);
+      background: rgba(15, 23, 42, 0.95);
+      transform: translateY(-1px);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .hero-meta span {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--glass);
+      border-radius: var(--card-radius);
+      border: 1px solid var(--border-subtle);
+      padding: 18px 18px 16px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(127, 255, 212, 0.12), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.25s ease-out;
+      pointer-events: none;
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .card-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: radial-gradient(circle at top left, rgba(127, 255, 212, 0.45), rgba(30, 64, 175, 0.8));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.7);
+    }
+
+    .card-title {
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .card-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .card-body {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      margin-top: 6px;
+      font-size: 0.86rem;
+    }
+
+    .info-label {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .info-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .info-value {
+      text-align: right;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .pill {
+      font-size: 0.78rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.85);
+      color: var(--text-muted);
+    }
+
+    .pill strong {
+      color: #e5e7eb;
+      font-weight: 600;
+    }
+
+    .link {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.86rem;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
+
+    .sections {
+      margin-top: 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    section {
+      background: var(--bg-soft);
+      border-radius: var(--card-radius);
+      border: 1px solid var(--border-subtle);
+      padding: 18px 18px 16px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    section::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.16), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.25s ease-out;
+      pointer-events: none;
+    }
+
+    section:hover::before {
+      opacity: 1;
+    }
+
+    .section-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-secondary);
+      margin-bottom: 4px;
+    }
+
+    .section-header-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+
+    section h2 {
+      font-size: 1.1rem;
+    }
+
+    .section-tagline {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .section-body {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .section-body p + p {
+      margin-top: 10px;
+    }
+
+    .section-body ul {
+      margin-top: 8px;
+      padding-left: 18px;
+    }
+
+    .section-body li {
+      margin-bottom: 5px;
+    }
+
+    .key-words {
+      margin-top: 8px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.65);
+      color: var(--text-muted);
+    }
+
+    .chip span {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    footer {
+      margin-top: 26px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="orb one"></div>
+  <div class="orb two"></div>
+  <div class="orb three"></div>
+
+  <div class="page">
+    <header>
+      <div class="badge">
+        <span class="badge-dot"></span>
+        <span>Intern Candidate for OpenSesame 2026 Security and Compliance Internship</span>
+      </div>
+    </header>
+
+<main>
+  <!-- 左上：Hello -->
+  <div class="hero reveal">
+    <div class="hero-inner">
+      <div class="hero-row-one">
+        <div>
+          <div class="hero-tag">
+            Ruixing Liu 
+          </div>
+        </div>
+        <div class="hero-pill">
+          Pre law · Learning GRC in practice
+        </div>
+      </div>
+
+      <h1 class="gradient-text">Hello!</h1>
+
+      <p class="subtitle">
+        My name is Ruixing Liu, I am a 3rd year student at Northwestern
+        University studying
+        <strong>Political Science, Cognitive Science, and Linguistics</strong>,
+        on a pre law path. I am drawn to the point where
+        <strong>governance, security, and human learning</strong> meet digital products.
+      </p>
+
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#journey">
+          Explore my OpenSesame story
+        </a>
+        <a class="btn btn-ghost" href="mailto:ruixingliu2027@u.northwestern.edu" target="_blank" rel="noreferrer">
+          Contact me
+        </a>
+      </div>
+
+      <div class="hero-meta">
+        <span>Based in Chicago area · Remote ready</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右上：Profile -->
+  <div class="card reveal">
+    <div class="card-header">
+      <div class="card-icon">👤</div>
+      <div>
+        <div class="card-title">Profile</div>
+        <div class="card-subtitle">Who I am today</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div class="info-line">
+          <span class="info-label">Name</span>
+          <span class="info-value">Ruixing Liu</span>
+        </div>
+        <div class="info-line">
+          <span class="info-label">Degree</span>
+          <span class="info-value">B.A. Political Science, Cognitive Science, Linguistics</span>
+        </div>
+        <div class="info-line">
+          <span class="info-label">School</span>
+          <span class="info-value">Northwestern University</span>
+        </div>
+        <div class="info-line">
+          <span class="info-label">Grad year</span>
+          <span class="info-value">2027</span>
+        </div>
+        <div class="info-line">
+          <span class="info-label">Email</span>
+          <span class="info-value">
+            <a class="link" href="mailto:ruixingliu2027@u.northwestern.edu">
+              ruixingliu2027@u.northwestern.edu
+            </a>
+          </span>
+        </div>
+        <div class="info-line">
+          <span class="info-label">LinkedIn</span>
+          <span class="info-value">
+            <a class="link" href="https://linkedin.com/in/ruixing46" target="_blank" rel="noreferrer">
+              linkedin.com/in/ruixing46
+            </a>
+          </span>
+        </div>
+      </div>
+
+      <div class="pill-row">
+        <div class="pill"><strong>GRC</strong> Research, Compliance Operations and Risk Analysis</div>
+        <div class="pill"><strong>Languages</strong> English · Mandarin · Spanish</div>
+        <div class="pill"><strong>Tools</strong> Python · HTML/CSS · Tableau · SQL</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 左下：Why OpenSesame -->
+  <div class="card reveal">
+    <div class="card-header">
+      <div class="card-icon">🌱</div>
+      <div>
+        <div class="card-title">Why OpenSesame</div>
+        <div class="card-subtitle">Why this team</div>
+      </div>
+    </div>
+    <div class="card-body">
+      OpenSesame stands out to me because it treats learning as something meaningful, not just a requirement. I admire how the platform brings together high quality content, global accessibility, and thoughtful use of AI to help organizations build real skills, not just pass trainings. The mix of a mission driven learning marketplace, a remote first culture, and a focus on making education practical and inclusive makes OpenSesame feel different from other SaaS companies, and it’s the kind of environment where I want to grow.
+    </div>
+  </div>
+
+  <!-- 右下：Why Security and Compliance -->
+  <div class="card reveal">
+    <div class="card-header">
+      <div class="card-icon">🛡️</div>
+      <div>
+        <div class="card-title">Why Security and Compliance</div>
+        <div class="card-subtitle">What keeps me curious</div>
+      </div>
+    </div>
+    <div class="card-body">
+      I enjoy turning rules and risks into something people can actually work with.
+      Through research, translation, and policy-focused projects, I learned how good governance
+      makes complex systems usable, trusted, and safe.
+      That is the space where I would like to grow, and where I see a natural fit with OpenSesame.
+    </div>
+  </div>
+</main>
+
+
+
+
+    <div class="sections">
+      <section id="journey" class="reveal">
+        <div class="section-label">Question 1</div>
+        <div class="section-header-row">
+          <h2>How OpenSesame fits into my journey</h2>
+          <div class="section-tagline">From student of systems to GRC practitioner</div>
+        </div>
+        <div class="section-body">
+          <p>
+            My long term goal is to work at the intersection of <strong>governance, security, and human learning</strong>, helping organizations turn regulations into clear, sustainable practices.
+            I want to build a career in <strong>governance, risk, and compliance (GRC)</strong> where I can support both strong controls and a healthy learning culture.
+          </p>
+          <p>
+            OpenSesame sits right in that intersection.
+            Your Security and Compliance team maintains trust through frameworks like ISO 27001 and SOC 2, while your product directly shapes how employees learn and stay compliant.
+            Joining this team would let me learn how real GRC operations work&nbsp;— from collecting audit evidence and assessing vendors to maintaining a Trust Center and running security awareness campaigns.
+          </p>
+          <p>
+            In research roles, I already work with structured processes: designing workflows, version-controlling materials, and checking every document for ethical and policy alignment.
+            In this internship, I hope to bring that same discipline to <strong>GRC tasks</strong> while learning how tools like Drata, JIRA, and Confluence support a repeatable, audit ready program.
+            Over time, I want to grow into someone who can help design and maintain security controls in organizations that care deeply about learning, like OpenSesame.
+          </p>
+
+          <div class="key-words">
+            <div class="chip"><span>Grow</span> into GRC and risk work</div>
+            <div class="chip"><span>Connect</span> security and learning</div>
+            <div class="chip"><span>Learn</span> modern frameworks in practice</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="strengths" class="reveal">
+        <div class="section-label">Question 2</div>
+        <div class="section-header-row">
+          <h2>What I would bring to OpenSesame</h2>
+          <div class="section-tagline">Skills that support everyday GRC work</div>
+        </div>
+        <div class="section-body">
+          <p>
+            I bring a combination of <strong>structured documentation habits</strong>, <strong>data comfort</strong>, and a <strong>language aware approach to communication</strong> that matches the day to day work described in this role.
+          </p>
+          <ul>
+            <li>
+              <strong>Evidence and documentation discipline.</strong>
+              In research projects, I build workflows to prepare experiment materials, version-control updates, and check every page against consent and disclosure requirements.
+              This maps well onto tasks like collecting audit evidence, tracking remediation steps, and keeping the Trust Center current and consistent.
+            </li>
+            <li>
+              <strong>Process and tooling mindset.</strong>
+              I enjoy learning new tools and using them to standardize work.
+              I have used Python, HTML, and data tools to restructure large corpora into searchable formats and to clean noisy datasets.
+              In your environment, I would apply that mindset to Drata, JIRA, and Confluence to help keep compliance tasks organized, traceable, and easier to repeat.
+            </li>
+            <li>
+              <strong>Communication across languages and roles.</strong>
+              Working across Mandarin, English, Spanish, and French taught me to explain policies and instructions in simple, precise language.
+              I am used to translating complex ideas for different audiences and making sure meaning does not get lost, which is key when supporting security awareness, vendor questionnaires, or internal policy updates.
+            </li>
+          </ul>
+          <p>
+            Day to day, I see myself contributing by <strong>keeping records clean, tasks unblocked, and communication clear</strong>:
+            helping prepare audit evidence, updating Trust Center content, supporting vendor assessments, and documenting small process improvements that make security and compliance work easier for the team and more transparent for stakeholders.
+          </p>
+
+          <div class="key-words">
+            <div class="chip"><span>Evidence</span> driven</div>
+            <div class="chip"><span>Tool</span> fluent</div>
+            <div class="chip"><span>Clear</span> communicator</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="ai-future" class="reveal">
+        <div class="section-label">Question 3</div>
+        <div class="section-header-row">
+          <h2>What excites me about AI in learning and work</h2>
+          <div class="section-tagline">AI as a partner for better judgment and safer habits</div>
+        </div>
+        <div class="section-body">
+          <p>
+            What excites me most about AI is its ability to <strong>notice patterns humans miss</strong> while leaving judgment and accountability with people.
+            In the context of OpenSesame, this means using AI to make both learning and GRC work more focused, relevant, and proactive.
+          </p>
+          <p>
+            For learning, AI can help turn compliance training from a one size experience into something <strong>adaptive and contextual</strong>:
+          </p>
+          <ul>
+            <li>
+              highlighting which topics users tend to miss in phishing simulations and recommending targeted refreshers;
+            </li>
+            <li>
+              tailoring examples to the learner’s role, risk exposure, and language, so content feels less generic and more actionable;
+            </li>
+            <li>
+              generating draft micro lessons that reflect new threats or regulatory changes, which humans can then refine.
+            </li>
+          </ul>
+          <p>
+            For the Security and Compliance team, AI can support <strong>audit readiness and risk monitoring</strong>:
+            mapping controls to evidence, suggesting missing documentation, summarizing vendor responses, or flagging unusual trends in vulnerability findings.
+            This does not replace careful review, but it gives the team better visibility and more time for higher level questions.
+          </p>
+          <p>
+            I am excited to work in a place where AI is used both to improve how people learn and to strengthen the security program itself.
+            I would bring curiosity about new tools, caution about data protection and bias, and a strong interest in helping design AI assisted workflows that are transparent, well documented, and aligned with OpenSesame’s values.
+          </p>
+
+          <div class="key-words">
+            <div class="chip"><span>Adaptive</span> compliance learning</div>
+            <div class="chip"><span>AI</span> assisted GRC</div>
+            <div class="chip"><span>Human</span> centered safeguards</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      Built as a creative project for the OpenSesame Security and Compliance Internship, Summer 2026.
+    </footer>
+  </div>
+
+  <script>
+    const revealEls = document.querySelectorAll(".reveal");
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.16 }
+    );
+
+    revealEls.forEach((el) => observer.observe(el));
+  </script>
+
+  <!-- :contentReference[oaicite:0]{index=0} -->
+</body>
+</html>
+
